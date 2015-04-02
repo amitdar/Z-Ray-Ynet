@@ -1,0 +1,37 @@
+<?php 
+$url = 'http://www.ynet.co.il/Integration/StoryRss1854.xml';
+$rss = simplexml_load_file($url);
+
+$items = array();
+foreach($rss->channel->item as $item) {
+	$title = (string) $item->title;
+	$link = (string) $item->link;
+	$title = trim($title);
+	if (! empty($title)) {
+		$items[] = array('title' => $title, 'link' => $link);
+	}
+}
+?>
+
+<ul style="direction: rtl; float: right; margin-right: 20px;">
+	<?php foreach ($items as $item) : ?>
+	<li><?php echo $item['title']; ?> - <a href="<?php echo $item['link']; ?>" target="_blank">קרא עוד</a></li>
+	<?php endforeach; ?>
+</ul>
+
+<script type="text/javascript">
+var ynet = <?php echo json_encode($items); ?>;
+
+jQuery('.zdb-toolbar-entry.zdb-extension-panel[data-extension="ynet"]').css('float', 'right');
+
+var rand = Math.floor(Math.random() * ynet.length);
+jQuery('.zdb-toolbar-entry.zdb-extension-panel[data-extension="ynet"] .zdb-toolbar-info').html(ynet[rand]['title'].substr(0, 70));
+
+setInterval(function() {
+	rand = Math.floor(Math.random() * ynet.length);
+	//zray.updateMenuTitle('ynet', 'ynet', ynet[rand].substr(0, 70));
+	jQuery('.zdb-toolbar-entry.zdb-extension-panel[data-extension="ynet"] .zdb-toolbar-info').html(ynet[rand]['title'].substr(0, 70));
+	jQuery(window).trigger('resize');
+}, 4000);
+
+</script>
